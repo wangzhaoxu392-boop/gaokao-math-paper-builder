@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GaokaoMathItem",
+  "type": "object",
+  "required": [
+    "id",
+    "schema_version",
+    "stem_markdown",
+    "question_type",
+    "topic_codes",
+    "primary_band",
+    "support_bands",
+    "difficulty_evidence",
+    "answer",
+    "solution",
+    "answer_provenance",
+    "answer_status",
+    "grade",
+    "paper_type",
+    "new_gaokao_alignment",
+    "source_authority",
+    "review_status",
+    "validity_status",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "id": { "type": "string", "minLength": 3 },
+    "schema_version": { "const": 1 },
+    "packet_id": { "type": ["string", "null"] },
+    "question_no": { "type": ["string", "integer", "null"] },
+    "subquestion_no": { "type": ["string", "integer", "null"] },
+    "parent_item_id": { "type": ["string", "null"] },
+    "depends_on": { "type": "array", "items": { "type": "string" } },
+    "stem_markdown": { "type": "string", "minLength": 1 },
+    "options": { "type": "array", "items": { "type": "string" } },
+    "figures": { "type": "array", "items": { "type": "string" } },
+    "topic_codes": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "question_type": {
+      "enum": ["single_choice", "multiple_choice", "fill_blank", "solution"]
+    },
+    "score": { "type": "number", "minimum": 1 },
+    "estimated_minutes": { "type": "number", "minimum": 0.5 },
+    "grade": { "enum": ["高一", "高二", "高三", "跨年级", "未知"] },
+    "term": { "type": "string" },
+    "paper_type": {
+      "enum": [
+        "新高考真题",
+        "新高考模拟",
+        "高一同步",
+        "高二同步",
+        "高三模拟",
+        "月考",
+        "期中",
+        "期末",
+        "章测",
+        "单元测",
+        "原创",
+        "未知"
+      ]
+    },
+    "scope": { "type": "array", "items": { "type": "string" } },
+    "curriculum_version": { "type": "string" },
+    "new_gaokao_alignment": {
+      "enum": ["aligned", "adaptable", "foundation_only", "excluded", "unknown"]
+    },
+    "source_authority": {
+      "enum": ["official", "provincial", "city_mock", "school_exam", "training", "user", "ai_generated", "unknown"]
+    },
+    "primary_band": { "enum": ["L1", "L2", "L3", "L4", "L5"] },
+    "support_bands": {
+      "type": "array",
+      "items": { "enum": ["L1", "L2", "L3", "L4", "L5"] },
+      "minItems": 1
+    },
+    "difficulty_evidence": {
+      "type": "object",
+      "description": "知识跨度、变形深度、计算负担、图形负担、新颖度和脚手架的证据。"
+    },
+    "answer": { "type": "string" },
+    "solution": { "type": "string" },
+    "rubric": { "type": "array", "items": { "type": "string" } },
+    "answer_provenance": {
+      "enum": ["official", "human_verified", "ai_verified", "ai_pending", "missing"]
+    },
+    "answer_status": {
+      "enum": ["matched", "partial", "missing", "conflicting", "mismatch", "verified"]
+    },
+    "answer_links": { "type": "array" },
+    "validity_status": {
+      "enum": ["valid", "suspect", "known_error", "deprecated"]
+    },
+    "review_status": {
+      "enum": ["draft", "needs_review", "verified", "deprecated"]
+    },
+    "variant_family": { "type": ["string", "null"] },
+    "adaptation_of": { "type": "array", "items": { "type": "string" } },
+    "source_item_ids": { "type": "array", "items": { "type": "string" } },
+    "split_confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "split_status": {
+      "enum": ["draft", "needs_review", "verified"]
+    },
+    "source_location": { "type": "object" },
+    "parse_warnings": { "type": "array", "items": { "type": "string" } },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "method": { "type": "string" },
+        "agreement": { "type": "boolean" },
+        "independent_passes": { "type": "integer", "minimum": 0 },
+        "models": { "type": "array", "items": { "type": "string" } },
+        "model_digest": { "type": "string" },
+        "prompt_version": { "type": "integer", "minimum": 1 },
+        "source_id": { "type": "string" },
+        "checked_at": { "type": "string" }
+      }
+    },
+    "excluded_reason": { "type": "string" },
+    "split_rule_version": { "type": "integer", "minimum": 1 },
+    "source_segment": {
+      "enum": ["question", "inline_answer", "answer_copy", "preamble", "generated", "legacy"]
+    },
+    "container_item": { "type": "boolean" },
+    "exclusion_code": {
+      "enum": [
+        "",
+        "answer_only",
+        "administrative_text",
+        "answer_copy",
+        "container_parent",
+        "duplicate",
+        "incomplete_question",
+        "auto_unverified"
+      ]
+    },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "created_at": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "content_hash": { "type": "string" }
+  },
+  "additionalProperties": true
+}

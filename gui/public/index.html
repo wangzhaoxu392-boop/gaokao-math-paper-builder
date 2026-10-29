@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="app-token" content="__APP_TOKEN__" />
+    <title>高考数学组卷台</title>
+    <link rel="icon" href="/assets/icon-small.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <img src="/assets/icon-small.svg" alt="" />
+          <div>
+            <strong>高考数学</strong>
+            <span>题库与组卷台</span>
+          </div>
+        </div>
+        <nav class="side-nav" aria-label="主导航">
+          <div class="nav-group">
+            <p class="nav-group-title">资源</p>
+            <button class="nav-item active" data-view="overview"><span>总览</span></button>
+            <button class="nav-item" data-view="upload"><span>资料入库</span><small class="nav-badge pending hidden" id="nav-upload-badge"></small></button>
+            <button class="nav-item" data-view="library"><span>资料库</span><small class="nav-badge pending hidden" id="nav-library-badge"></small></button>
+          </div>
+          <div class="nav-group">
+            <p class="nav-group-title">加工</p>
+            <button class="nav-item" data-view="pairing"><span>配对解析</span><small class="nav-badge pending hidden" id="nav-pairing-badge"></small></button>
+            <button class="nav-item" data-view="review"><span>题目审核</span><small class="nav-badge pending hidden" id="review-count"></small></button>
+          </div>
+          <div class="nav-group">
+            <p class="nav-group-title">组卷</p>
+            <button class="nav-item" data-view="generate"><span>生成试卷</span><i class="nav-state blocked hidden" id="nav-generate-state" aria-label="生成试卷存在阻断项"></i></button>
+            <button class="nav-item" data-view="history"><span>任务历史</span><i class="nav-state running hidden" id="nav-history-state" aria-label="后台任务运行中"></i></button>
+          </div>
+          <div class="nav-group">
+            <p class="nav-group-title">系统</p>
+            <button class="nav-item" data-view="settings"><span>设置诊断</span></button>
+          </div>
+        </nav>
+        <div class="sidebar-foot">
+          <span class="status-dot" id="service-dot"></span>
+          <span id="model-summary">模型检查中</span>
+        </div>
+      </aside>
+
+      <div class="content-shell">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">GAOKAO MATH WORKBENCH</p>
+            <h1 id="page-title">资料库总览</h1>
+            <p id="page-subtitle">查看来源、资料包、草稿题和可组卷题。</p>
+          </div>
+          <div class="top-status">
+            <span id="ollama-summary" class="status-pill muted">Ollama 检查中</span>
+            <button class="secondary small" data-go="library">刷新资料库</button>
+          </div>
+        </header>
+
+        <main>
+          <section id="view-overview" class="view active">
+            <div id="overview-stats" class="metric-grid"></div>
+            <div class="split-grid">
+              <article class="panel">
+                <div class="panel-heading">
+                  <div><p class="eyebrow">处理队列</p><h2>需要继续处理的事项</h2></div>
+                </div>
+                <div id="overview-attention" class="attention-list"></div>
+              </article>
+              <article class="panel">
+                <div class="panel-heading">
+                  <div><p class="eyebrow">快速开始</p><h2>下一步操作</h2></div>
+                </div>
+                <div class="quick-actions">
+                  <button class="quick-card" data-go="upload"><strong>上传试卷与答案</strong><span>保存到资料库并自动拆出草稿题</span></button>
+                  <button class="quick-card" data-go="pairing"><strong>完成题答配对</strong><span>只展示最高置信度候选</span></button>
+                  <button class="quick-card" data-go="generate"><strong>生成一套试卷</strong><span>从已审核题目中选择内容</span></button>
+                </div>
+              </article>
+            </div>
+            <article class="panel">
+              <div class="panel-heading">
+                <div><p class="eyebrow">最近资料</p><h2>最近更新的资料包</h2></div>
+                <button class="secondary small" data-go="library">查看全部</button>
+              </div>
+              <div id="overview-recent" class="compact-list"></div>
+            </article>
+          </section>
+
+          <section id="view-upload" class="view">
+            <div class="upload-layout">
+              <article class="panel">
+                <div class="panel-heading">
+                  <div><p class="eyebrow">永久保存</p><h2>上传试卷、答案和解析</h2></div>
+                  <span class="hint">ZIP · PDF · DOCX · 图片 · MD · TXT</span>
+                </div>
+                <div id="drop-zone" class="drop-zone" tabindex="0">
+                  <div class="drop-icon">＋</div>
+                  <strong>拖入整套资料，或点击选择文件</strong>
+                  <span>每个压缩包会形成独立考试资料包；保存后自动拆题。</span>
+                  <input id="file-input" type="file" accept=".zip,.tar,.tgz,.gz,.7z,.rar,.pdf,.docx,.md,.txt,.png,.jpg,.jpeg,.webp" multiple hidden />
+                </div>
+                <div id="upload-list" class="upload-list"></div>
+                <div class="actions">
+                  <button id="upload-button" class="primary" disabled>保存到资料库</button>
+                  <button id="clear-upload" class="secondary">清空选择</button>
+                  <span id="upload-message" class="form-message"></span>
+                </div>
+              </article>
+              <aside class="panel">
+                <div class="panel-heading">
+                  <div><p class="eyebrow">分组预览</p><h2>预计形成的资料包</h2></div>
+                </div>
+                <div id="upload-preview" class="attention-list">
+                  <p class="empty-state">选择文件后，这里会显示压缩包和文件角色建议。</p>
+                </div>
+                <div class="notice compact-notice">
+                  <strong>自动识别只生成建议</strong>
+                  <p>题卷、答案和解析分别保存；低置信度配对不会自动确认。</p>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <section id="view-library" class="view">
+            <article class="panel">
+              <div class="panel-heading">
+                <div><p class="eyebrow">资料库</p><h2>资料包与结构化题目</h2></div>
+                <div class="actions compact">
+                  <button id="split-preview" class="secondary small">检查拆题结果</button>
+                  <button id="split-cleanup" class="primary small">清理误拆题</button>
+                  <button id="library-open-data" class="secondary small">打开数据目录</button>
+                  <button id="refresh-library" class="secondary small">刷新</button>
+                </div>
+              </div>
+              <div class="segmented" id="library-tabs">
+                <button class="active" data-library-tab="packets">资料包 <span id="packet-count">0</span></button>
+                <button data-library-tab="items">题目 <span id="item-count">0</span></button>
+              </div>
+              <div class="filter-row">
+                <input id="library-search" placeholder="搜索标题、文件名、题号或知识点" />
+                <select id="filter-grade"><option value="">全部年级</option><option>高一</option><option>高二</option><option>高三</option></select>
+                <select id="filter-year"><option value="">全部年份</option></select>
+                <select id="filter-type"><option value="">全部卷型</option></select>
+                <select id="filter-status"><option value="">全部状态</option><option value="awaiting_pairing">待配对</option><option value="split">已拆题</option><option value="draft">草稿</option><option value="ready">可组卷</option></select>
+                <span id="library-filter-count" class="hint"></span>
+              </div>
+              <div id="library-bulk" class="actions compact hidden"></div>
+              <div id="packet-list" class="packet-grid"></div>
+              <div id="item-list" class="item-table-wrap hidden"></div>
+            </article>
+          </section>
+
+          <section id="view-pairing" class="view">
+            <article class="panel">
+              <div class="panel-heading">
+                <div><p class="eyebrow">配对解析</p><h2>确认题卷、答案和解析的关系</h2></div>
+                <div class="actions compact">
+                  <button id="confirm-safe-pairs" class="primary small">确认全部高置信配对</button>
+                  <button id="refresh-pairing" class="secondary small">刷新</button>
+                </div>
+              </div>
+              <div class="notice">
+                <strong>确认后再解析答案</strong>
+                <p>每个题卷只展示最多三个最高置信度候选。同一压缩包内的文件优先配对。</p>
+              </div>
+              <div id="pairing-list" class="packet-grid"></div>
+            </article>
+          </section>
+
+          <section id="view-review" class="view">
+            <article class="panel">
+              <div class="panel-heading">
+                <div><p class="eyebrow">题目审核</p><h2>只处理需要人工确认的题目</h2><p id="review-summary" class="hint"></p></div>
+                <div class="actions compact">
+                  <button id="repair-answers" class="primary small">自动补齐缺失答案</button>
+                  <button id="auto-triage-review" class="secondary small">全自动处理待审</button>
+                  <button id="auto-review-all" class="secondary small">自动审核已配对资料包</button>
+                  <button id="bulk-approve-review" class="secondary small">批准当前筛选全部合格题</button>
+                  <button id="refresh-review" class="secondary small">刷新</button>
+                </div>
+              </div>
+              <div class="segmented review-tabs" id="review-tabs">
+                <button data-review-queue="human">人工例外 <span id="review-human-count">0</span></button>
+                <button data-review-queue="missing">缺答案 <span id="review-missing-count">0</span></button>
+                <button data-review-queue="sample">随机抽查 <span id="review-sample-count">0</span></button>
+                <button data-review-queue="excluded">系统排除 <span id="review-excluded-count">0</span></button>
+                <button class="active" data-review-queue="all">全部 <span id="review-all-count">0</span></button>
+              </div>
+              <div id="review-list" class="review-list"></div>
+            </article>
+          </section>
+
+          <section id="view-generate" class="view">
+            <div class="wizard-layout">
+              <article class="panel">
+                <div class="stepper" id="wizard-stepper">
+                  <button class="active" data-step="1"><b>1</b><span>选择范围</span></button>
+                  <button data-step="2"><b>2</b><span>设置学情</span></button>
+                  <button data-step="3"><b>3</b><span>预检生成</span></button>
+                </div>
+                <form id="paper-form">
+                  <section class="wizard-step active" data-step-panel="1">
+                    <div class="field-grid">
+                      <label class="field span-2"><span>题目来源</span>
+                        <select id="source-scope">
+                          <option value="all">整个资料库</option>
+                          <option value="packets">指定资料包</option>
+                          <option value="items">指定题目</option>
+                        </select>
+                      </label>
+                      <label class="field span-2 hidden" id="packet-select-wrap"><span>选择资料包</span>
+                        <select id="packet-select" multiple size="5"></select>
+                      </label>
+                      <label class="field span-2 hidden" id="item-select-wrap"><span>选择题目</span>
+                        <select id="item-select" multiple size="7"></select>
+                      </label>
+                    </div>
+                    <p class="hint">草稿题和缺答案题不会进入正式候选池。</p>
+                  </section>
+                  <section class="wizard-step" data-step-panel="2">
+                    <div class="field-grid">
+                      <label class="field span-2"><span>交付类型</span>
+                        <select name="delivery_type" id="delivery-type">
+                          <option value="tutoring">一对一教学包 · 75分核心卷</option>
+                          <option value="classroom">45分钟班课 · 50分小卷</option>
+                          <option value="full_exam">完整考试卷</option>
+                        </select>
+                      </label>
+                      <label class="field"><span>学生当前分数（150分制）</span><input type="number" name="current_score" id="current-score" min="0" max="150" step="1" value="90" required /><small id="current-score-band">90分 · L3</small></label>
+                      <label class="field"><span>目标分数（150分制）</span><input type="number" name="target_score" id="target-score" min="0" max="150" step="1" value="120" required /><small id="target-score-band">120分 · L4</small></label>
+                      <div class="field span-2 score-presets">
+                        <span>常用当前分数</span>
+                        <button type="button" class="score-preset" data-score-target="current-score" data-score="30">30分</button>
+                        <button type="button" class="score-preset" data-score-target="current-score" data-score="60">60分</button>
+                        <button type="button" class="score-preset" data-score-target="current-score" data-score="90">90分</button>
+                        <button type="button" class="score-preset" data-score-target="current-score" data-score="120">120分</button>
+                        <button type="button" class="score-preset" data-score-target="current-score" data-score="135">135分</button>
+                      </div>
+                      <div class="field span-2 score-presets">
+                        <span>常用目标分数</span>
+                        <button type="button" class="score-preset" data-score-target="target-score" data-score="60">60分</button>
+                        <button type="button" class="score-preset" data-score-target="target-score" data-score="90">90分</button>
+                        <button type="button" class="score-preset" data-score-target="target-score" data-score="105">105分</button>
+                        <button type="button" class="score-preset" data-score-target="target-score" data-score="120">120分</button>
+                        <button type="button" class="score-preset" data-score-target="target-score" data-score="135">135分</button>
+                      </div>
+                      <label class="field"><span>年级</span><select name="grade"><option>高三</option><option>高二</option><option>高一</option><option>跨年级</option></select></label>
+                      <label class="field"><span>学期 / 复习阶段</span><input name="term" value="一轮复习" /></label>
+                      <label class="field"><span>目标卷型</span><select name="paper_type"><option>新高考模拟</option><option>新高考真题</option><option>高三模拟</option><option>高一同步</option><option>高二同步</option><option>月考</option><option>期中</option><option>期末</option><option>章测</option><option>单元测</option></select></label>
+                      <label class="field"><span>选题种子</span><input type="number" name="seed" placeholder="自动生成" /></label>
+                      <label class="field span-2"><span>薄弱专题（逗号分隔）</span><input name="weak_topics" id="weak-topics" placeholder="例如：数列、圆锥曲线、导数" required /></label>
+                      <label class="field"><span>顶层题数</span><input type="number" name="question_count" id="question-count" min="4" max="30" value="12" /></label>
+                      <label class="field"><span>建议完成时长（分钟）</span><input type="number" name="paper_minutes" id="paper-minutes" min="20" max="180" value="35" /></label>
+                      <label class="field"><span>单选题</span><input type="number" class="type-count" name="single_choice" min="0" value="6" /></label>
+                      <label class="field"><span>多选题</span><input type="number" class="type-count" name="multiple_choice" min="0" value="2" /></label>
+                      <label class="field"><span>填空题</span><input type="number" class="type-count" name="fill_blank" min="0" value="2" /></label>
+                      <label class="field"><span>解答题</span><input type="number" class="type-count" name="solution" min="0" value="2" /></label>
+                    </div>
+                    <div class="checks">
+                      <label><input type="checkbox" name="comprehensive" checked /> 综合卷覆盖四类题型</label>
+                      <label><input type="checkbox" name="allow_other_grades" /> 允许其他年级前置题</label>
+                      <label><input type="checkbox" name="allow_adaptable" /> 允许经过复核的改编题</label>
+                    </div>
+                  </section>
+                  <section class="wizard-step" data-step-panel="3">
+                    <div id="preflight" class="preflight large"></div>
+                    <div class="actions">
+                      <button type="submit" class="primary">开始生成</button>
+                      <span id="form-message" class="form-message"></span>
+                    </div>
+                  </section>
+                </form>
+                <div class="wizard-actions">
+                  <button id="wizard-back" class="secondary">上一步</button>
+                  <button id="wizard-next" class="primary">下一步</button>
+                </div>
+              </article>
+              <aside class="panel task-panel">
+                <div class="panel-heading"><div><p class="eyebrow">当前任务</p><h2 id="current-job-title">尚无运行中的任务</h2></div></div>
+                <div id="job-progress" class="progress-track hidden"><span></span></div>
+                <div id="job-status" class="attention-list"><p class="empty-state">完成预检后在这里查看生成进度。</p></div>
+                <pre id="job-log" class="log hidden"></pre>
+                <div id="job-actions" class="actions hidden">
+                  <button id="open-folder" class="secondary">打开输出目录</button>
+                  <button id="download-student" class="secondary">学生卷 PDF</button>
+                  <button id="download-teacher" class="secondary">教师卷 PDF</button>
+                  <button id="continue-job" class="primary">继续任务</button>
+                  <button id="cancel-job" class="danger">取消任务</button>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <section id="view-history" class="view">
+            <article class="panel">
+              <div class="panel-heading">
+                <div><p class="eyebrow">任务历史</p><h2>生成记录与输出</h2></div>
+                <button id="refresh-jobs" class="secondary small">刷新</button>
+              </div>
+              <div id="job-list" class="compact-list"></div>
+            </article>
+          </section>
+
+          <section id="view-settings" class="view">
+            <div class="split-grid">
+              <article class="panel">
+                <div class="panel-heading"><div><p class="eyebrow">运行状态</p><h2>组件检测</h2></div><button id="refresh-diagnostics" class="secondary small">刷新</button></div>
+                <div id="diagnostics" class="attention-list"></div>
+              </article>
+              <article class="panel">
+                <div class="panel-heading"><div><p class="eyebrow">数据位置</p><h2>原始文件与生成结果</h2></div></div>
+                <p>原始资料按内容哈希保存，窗口负责浏览和定位，不需要手动整理内部目录。</p>
+                <div class="actions">
+                  <button id="open-data-dir" class="secondary">打开资料库目录</button>
+                  <button id="open-output-dir" class="secondary hidden">打开最近输出</button>
+                </div>
+              </article>
+              <article class="panel span-2">
+                <div class="panel-heading">
+                  <div><p class="eyebrow">自动巡检</p><h2>题库健康检查</h2><p class="hint">应用运行时按计划分批巡检。先做确定性修复，再由本地模型检查；本地不可用或发现问题时立即进行两次独立线上复核，仍无法确认才进入人工。</p></div>
+                  <button id="run-library-audit" class="primary small">立即巡检</button>
+                </div>
+                <div id="audit-status" class="attention-list"></div>
+                <div class="field-grid" style="margin-top:18px">
+                  <label class="field"><span>启用定时巡检</span><select id="audit-enabled"><option value="true">启用</option><option value="false">关闭</option></select></label>
+                  <label class="field"><span>启动应用时补跑</span><select id="audit-on-startup"><option value="true">启用</option><option value="false">关闭</option></select></label>
+                  <label class="field"><span>巡检间隔（小时）</span><input id="audit-interval-hours" type="number" min="1" max="168" step="1" value="24" /></label>
+                  <label class="field"><span>每批检查题数</span><input id="audit-batch-size" type="number" min="1" max="30" step="1" value="8" /></label>
+                  <label class="field"><span>普通题复检间隔（天）</span><input id="audit-recheck-days" type="number" min="1" max="365" step="1" value="7" /></label>
+                  <label class="field"><span>人工题重试间隔（天）</span><input id="audit-human-retry-days" type="number" min="1" max="365" step="1" value="30" /></label>
+                  <label class="field"><span>本地模型超时（秒）</span><input id="audit-local-timeout-seconds" type="number" min="5" max="180" step="5" value="20" /></label>
+                  <label class="field"><span>线上失败重试次数</span><input id="audit-cloud-retries" type="number" min="1" max="3" step="1" value="2" /></label>
+                  <div class="field span-2"><button id="save-audit-settings" class="secondary">保存巡检设置</button></div>
+                </div>
+              </article>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <dialog id="detail-dialog">
+      <div class="dialog-heading"><h2 id="dialog-title">详情</h2><button id="dialog-close" class="secondary small">关闭</button></div>
+      <div id="dialog-body"></div>
+    </dialog>
+    <div id="toast" class="toast hidden"></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

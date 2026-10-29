@@ -1,0 +1,9 @@
+interface:
+  display_name: "高考数学组卷"
+  short_description: "分层真题入库、题卷答案配对、质量复核与定制考试卷生成"
+  icon_small: "./assets/icon-small.svg"
+  icon_large: "./assets/icon-large.svg"
+  brand_color: "#176B87"
+  default_prompt: "使用 $gaokao-math-paper-builder 处理我的数学试题库并生成合适试卷。"
+policy:
+  allow_implicit_invocation: true

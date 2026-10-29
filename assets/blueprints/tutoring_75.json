@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "tutoring_75",
+  "name": "一对一核心教学卷",
+  "delivery_type": "tutoring",
+  "total_score": 75,
+  "paper_minutes": 35,
+  "session_minutes": 120,
+  "question_count_default": 12,
+  "question_count_min": 6,
+  "question_count_max": 18,
+  "default_type_counts": {
+    "single_choice": 6,
+    "multiple_choice": 2,
+    "fill_blank": 2,
+    "solution": 2
+  },
+  "type_point_targets": {
+    "single_choice": 5,
+    "multiple_choice": 6,
+    "fill_blank": 5
+  },
+  "difficulty_mix": {
+    "L1": 0.90,
+    "L2": 0.10,
+    "L3": 0.0,
+    "L4": 0.0,
+    "L5": 0.0
+  },
+  "quality": {
+    "weak_topic_min_ratio": 0.60,
+    "weak_topic_max_ratio": 0.75,
+    "require_all_four_types_for_comprehensive": true
+  }
+}

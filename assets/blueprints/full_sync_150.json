@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "full_sync_150",
+  "name": "高一高二同步综合卷",
+  "delivery_type": "full_exam",
+  "total_score": 150,
+  "paper_minutes": 120,
+  "session_minutes": 120,
+  "question_count_default": 19,
+  "question_count_min": 10,
+  "question_count_max": 24,
+  "default_type_counts": {
+    "single_choice": 8,
+    "multiple_choice": 3,
+    "fill_blank": 3,
+    "solution": 5
+  },
+  "type_point_targets": {
+    "single_choice": 5,
+    "multiple_choice": 6,
+    "fill_blank": 5
+  },
+  "difficulty_mix": {
+    "L1": 0.20,
+    "L2": 0.35,
+    "L3": 0.30,
+    "L4": 0.13,
+    "L5": 0.02
+  },
+  "quality": {
+    "require_all_four_types_for_comprehensive": true
+  }
+}

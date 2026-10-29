@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "classroom_50",
+  "name": "45分钟班课小卷",
+  "delivery_type": "classroom",
+  "total_score": 50,
+  "paper_minutes": 30,
+  "session_minutes": 45,
+  "question_count_default": 9,
+  "question_count_min": 4,
+  "question_count_max": 12,
+  "default_type_counts": {
+    "single_choice": 4,
+    "multiple_choice": 2,
+    "fill_blank": 2,
+    "solution": 1
+  },
+  "type_point_targets": {
+    "single_choice": 5,
+    "multiple_choice": 6,
+    "fill_blank": 5
+  },
+  "difficulty_mix": {
+    "L1": 0.90,
+    "L2": 0.10,
+    "L3": 0.0,
+    "L4": 0.0,
+    "L5": 0.0
+  },
+  "quality": {
+    "weak_topic_min_ratio": 0.60,
+    "weak_topic_max_ratio": 0.75,
+    "require_all_four_types_for_comprehensive": true
+  }
+}

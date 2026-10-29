@@ -1,0 +1,41 @@
+{
+  "ollama": {
+    "base_url": "http://127.0.0.1:11434",
+    "embedding": "bge-m3:latest",
+    "embedding_fallback": "nomic-embed-text:latest",
+    "simple": "qwen2.5:7b",
+    "local_review": "deepseek-r1:14b",
+    "local_timeout_seconds": 60,
+    "local_review_timeout_seconds": 180
+  },
+  "cloud": {
+    "mode": "inherit"
+  },
+  "budget": {
+    "teaching_tokens": 40000,
+    "full_exam_tokens": 80000,
+    "ingest_tokens": 80000,
+    "warn_ratio": 0.8
+  },
+  "review": {
+    "mode": "zero_touch",
+    "auto_approve_low_risk": true,
+    "exclude_unresolved": true,
+    "sample_badge": false,
+    "audit_enabled": true,
+    "audit_on_startup": true,
+    "audit_interval_hours": 24,
+    "audit_batch_size": 8,
+    "audit_recheck_days": 7,
+    "audit_human_retry_days": 30,
+    "audit_local_timeout_seconds": 20,
+    "audit_cloud_retries": 2
+  },
+  "generation": {
+    "fast_path": true,
+    "auto_relax_bands": true,
+    "auto_generate_questions": true,
+    "auto_generate_local": false,
+    "agent_fallback": true
+  }
+}

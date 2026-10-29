@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "id": "full_new_gaokao_150",
+  "name": "新高考全国卷结构",
+  "delivery_type": "full_exam",
+  "total_score": 150,
+  "paper_minutes": 120,
+  "session_minutes": 120,
+  "question_count_default": 19,
+  "question_count_min": 19,
+  "question_count_max": 19,
+  "default_type_counts": {
+    "single_choice": 8,
+    "multiple_choice": 3,
+    "fill_blank": 3,
+    "solution": 5
+  },
+  "type_point_targets": {
+    "single_choice": 5,
+    "multiple_choice": 6,
+    "fill_blank": 5
+  },
+  "section_points": {
+    "single_choice": 40,
+    "multiple_choice": 18,
+    "fill_blank": 15,
+    "solution": 77
+  },
+  "difficulty_mix": {
+    "L1": 0.05,
+    "L2": 0.15,
+    "L3": 0.35,
+    "L4": 0.30,
+    "L5": 0.15
+  },
+  "quality": {
+    "require_all_four_types_for_comprehensive": true
+  }
+}
